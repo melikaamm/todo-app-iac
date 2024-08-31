@@ -1,0 +1,12 @@
+- name: github runner install
+  hosts: all
+  become: yes
+  vars:
+    github_repo: "todo-app"
+    github_account: melikaamm
+    runner_name: "github-runner"
+    runner_user: ubuntu
+    no_log: false
+
+  roles:
+  - role: github-runner

@@ -1,0 +1,2 @@
+[github_runner]
+ec2-instance-1 ansible_host=34.233.208.230

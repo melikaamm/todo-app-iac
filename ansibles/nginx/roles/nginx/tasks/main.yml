@@ -1,0 +1,64 @@
+---
+- name: Update apt cache and install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Create Nginx configuration for reverse proxy
+  copy:
+    dest: /etc/nginx/sites-available/reverse_proxy
+    content: |
+      server {
+          listen 80;
+          server_name todo.melika.fit;
+
+          location / {
+              proxy_pass http://localhost:8080;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+      }
+
+      server {
+          listen 80;
+          server_name monitoring.melika.fit;
+
+          location / {
+              proxy_pass http://localhost:3000;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+      }
+
+- name: Enable the reverse proxy site
+  file:
+    src: /etc/nginx/sites-available/reverse_proxy
+    dest: /etc/nginx/sites-enabled/reverse_proxy
+    state: link
+
+- name: Remove the default Nginx configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Test Nginx configuration
+  command: nginx -t
+  register: nginx_test
+  ignore_errors: yes
+
+- name: Fail if Nginx configuration is invalid
+  fail:
+    msg: "Nginx configuration test failed"
+  when: nginx_test.rc != 0
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded
+
+
