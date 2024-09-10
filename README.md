@@ -70,3 +70,10 @@ to apply the playbooks, simply run:
 ansible-playbook main.yml -b -K
 ```
 Will ask sudo password of your server, if you have sudo without password just leave it empty and press Enter.  
+
+## Refrence repositories
+1. [Docker Ansible](https://github.com/nickjj/ansible-docker)
+
+2. [Github Action Ansible](https://github.com/MonolithProjects/ansible-github_actions_runner)
+
+3. [MongoDB Atlas Cloud Terraform](https://github.com/mongodb/terraform-provider-mongodbatlas/tree/master/examples/starter)
